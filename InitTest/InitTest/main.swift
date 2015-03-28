@@ -21,3 +21,13 @@ struct Fahrenheit {
 var f = Fahrenheit()
     
 println("The default temperature is \(f.temperature)° fahrenheit")
+
+//Type alias just same as typedef in the C language
+typealias F = Fahrenheit
+typealias Count = Int64
+
+//for example to use it
+var af = F()
+println("The max of Count is \(Count.max) and the min of Count is \(Count.min)")
+
+
