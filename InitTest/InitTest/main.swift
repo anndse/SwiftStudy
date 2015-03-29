@@ -184,3 +184,160 @@ print(PlanetInt.Earth.rawValue)
 print(ASCIIControlCharacter.CarriageReturn.rawValue)
 
 
+//for study Classes and structures
+struct Resolution {
+    var width = 0
+    var height = 0
+}
+
+class VideoMode {
+    var resolution = Resolution()
+    var interlaced = false
+    var frameRate = 0.0
+    var name: String?
+}
+
+//use it as:
+let someResolution = Resolution()
+let someVideoMode = VideoMode()
+println("The width of resolution is \(someResolution.width)")
+println("The width of someVideoMode is \(someVideoMode.resolution.width)")
+someVideoMode.resolution.width = 1280
+println("The width of someVideoMode is now \(someVideoMode.resolution.width)")
+
+//To init its
+//“Structures and Enumerations Are Value Types”
+let vga = Resolution(width: 640, height: 480)
+println("vga: \(vga.width) * \(vga.height)")
+let hd  = Resolution(width: 1920, height: 1080)
+var cinema = hd
+cinema.width = 2048
+println("width of hd is \(hd.width), and width of cinema is \(cinema.width)")
+
+
+//Classes are Reference Types
+let teneighty = VideoMode()
+teneighty.resolution = hd
+teneighty.interlaced = true
+teneighty.name = "1080i"
+teneighty.frameRate = 25.0
+
+let alsoTeneighty = teneighty
+alsoTeneighty.frameRate = 30.0
+println("frame of tenEighty is \(teneighty.frameRate), frame of alsoTeneighty is \(alsoTeneighty.frameRate)")
+
+//Identity operator === and !==
+//identical to(===), Not identical to(!==)
+if(teneighty === alsoTeneighty){
+    println("teneighty and alsoTeneighty refer to the same VideoMode instance")
+}
+
+//Stored Properties
+struct FixedLengthRange {
+    var firstValue: Int
+    let length:Int
+}
+var rangeOfThreeItems =  FixedLengthRange(firstValue: 0, length: 3)
+rangeOfThreeItems.firstValue = 6
+//cannot assign to length, it's const
+//rangeOfThreeItems.length = 4
+
+//Computed Properties
+struct Point{
+    var x = 0.0, y = 0.0
+}
+struct Size {
+    var width =  0.0, height = 0.0
+}
+struct Rect {
+    var origin = Point()
+    var size = Size()
+    var center:Point{
+        get {
+            let centerX = origin.x + (size.width / 2)
+            let centerY = origin.y + (size.height / 2)
+            return Point(x: centerX, y: centerY)
+        }
+        
+        //set (newCenter) { //also can write as this:
+        set {
+            origin.x = newValue.x - (size.width / 2)
+            origin.y = newValue.y - (size.height / 2)
+        }
+    }
+    
+    func area()->Double{
+        return size.height * size.width
+    }
+}
+var square = Rect(origin: Point(x: 0.0, y: 0.0), size: Size(width: 10.0, height: 10.0))
+println("The center of square is (\(square.center.x), \(square.center.y))")
+println("And the area of square is \(square.area())")
+square.center = Point(x: 20.0, y: 20.0)
+println("square.origin is (\(square.origin.x), \(square.origin.y))")
+
+//Property Observers
+//willSet and didSet
+class StepCounter{
+    var totalsetps: Int = 0 {
+        willSet {
+            println("About to set totalsteps to \(newValue)")
+        }
+        didSet {
+            if totalsetps > oldValue {
+                println("Add \(totalsetps - oldValue) steps")
+            }
+        }
+    }
+}
+//test it
+let stepCounter = StepCounter()
+stepCounter.totalsetps = 100
+stepCounter.totalsetps =  50
+
+
+//modifying value types from  within instance methods
+//keyword mutating
+//eg:
+struct NewPoint {
+    var x = 0.0, y = 0.0
+    mutating func moveBy(dx:Double, dy:Double){
+        self = NewPoint(x: x+dx, y: y+dy)
+    }
+}
+var newpoint = NewPoint(x: 5.0, y: 1.0)
+newpoint.moveBy(1.0, dy: 5.0)
+println("After call moveBy: (\(newpoint.x), \(newpoint.y))")
+
+
+//Subscript Options
+struct Matrix {
+    let rows: Int, columns: Int
+    var grid: [Double]
+    init(rows: Int, columns: Int) {
+        self.rows = rows
+        self.columns = columns
+        self.grid = Array(count: rows * columns, repeatedValue: 0.0)
+    }
+    
+    func indexIsValid(row: Int, column: Int)->Bool {
+        return row >= 0 && row < rows && column >= 0 && column < columns
+    }
+    
+    subscript(row: Int, column: Int) -> Double {
+        get {
+            assert(indexIsValid(row, column: column), "Index out of range")
+            return grid[(row * columns) + column]
+        }
+        set{
+            assert(indexIsValid(row, column: column), "Index out of range")
+            grid[(row * columns) + column] = newValue
+        }
+    }
+}
+//test it
+var matrix = Matrix(rows: 5, columns: 5)
+matrix[2,3] = 50
+println(matrix[2,3])
+
+
